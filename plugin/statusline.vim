@@ -64,36 +64,39 @@ hi StatusLineHitEnterPromptMode guibg=#ff6c6b guifg=#23272e
 hi StatusLineHitEnterPromptModeItalic guibg=#ff6c6b guifg=#23272e gui=italic
 hi StatusLineHitEnterPromptModeWinNr guibg=#b64a49 guifg=#23272e
 function! VcsStatus()
-  let branch = fugitive#head()
-  let b:branch_maxwin = 20
+    let branch = fugitive#head()
+    let b:branch_maxwin = 20
 
-  if branch ==# ''
-    return ''
-  endif
+    if branch ==# ''
+        return ''
+    endif
 
-  let [a,m,r] = GitGutterGetHunkSummary()
-  let ahl = ''
-  let mhl = ''
-  let rhl = ''
-  if a > 0
-    let ahl .= '%#StatusLineGitDiffAdd#'
-  else
-    let ahl .= '%#StatusLineBg2b#'
-  end
+    let hunk_stat = get(b:,'gitsigns_status_dict', {})
+    let a = get(hunk_stat, 'added', 0)
+    let m = get(hunk_stat, 'changed', 0)
+    let r = get(hunk_stat, 'removed', 0)
+    let ahl = ''
+    let mhl = ''
+    let rhl = ''
+    if a > 0
+        let ahl .= '%#StatusLineGitDiffAdd#'
+    else
+        let ahl .= '%#StatusLineBg2b#'
+    end
 
-  if m > 0
-    let mhl .= '%#StatusLineGitDiffMod#'
-  else
-    let mhl .= '%#StatusLineBg2b#'
-  end
+    if m > 0
+        let mhl .= '%#StatusLineGitDiffMod#'
+    else
+        let mhl .= '%#StatusLineBg2b#'
+    end
 
-  if r > 0
-    let rhl .= '%#StatusLineGitDiffDel#'
-  else
-    let rhl .= '%#StatusLineBg2b#'
-  end
+    if r > 0
+        let rhl .= '%#StatusLineGitDiffDel#'
+    else
+        let rhl .= '%#StatusLineBg2b#'
+    end
 
-  return printf(' %%#StatusLineGitBranchSymbol# %%#StatusLineGitBranchName#%s %s %d  %s %d  %s %d ', trim(branch), ahl, a, mhl, m, rhl, r)
+    return printf(' %%#StatusLineGitBranchSymbol# %%#StatusLineGitBranchName#%s %s %d  %s %d  %s %d ', trim(branch), ahl, a, mhl, m, rhl, r)
 endfunction
 
 function! ALEStatus() abort
@@ -124,104 +127,104 @@ function! ALEStatus() abort
     end
     let sl .= printf('   %d ', warnings)
 
-  return sl
+    return sl
 endfunction
 
 function! GetFileName()
-  let b:max_width = 3 * winwidth(g:statusline_winid) / 5
-  let b:file_name = bufname(winbufnr(g:statusline_winid))
-  let b:width = strwidth(b:file_name)
+    let b:max_width = 3 * winwidth(g:statusline_winid) / 5
+    let b:file_name = bufname(winbufnr(g:statusline_winid))
+    let b:width = strwidth(b:file_name)
 
-  if b:width == 0
-    let b:file_name = '[scratch]'
-  else
-    " If the file name is too big, we just write its tail part
-    if b:width > b:max_width
-      let b:file_name = fnamemodify(b:file_name, ':t')
+    if b:width == 0
+        let b:file_name = '[scratch]'
+    else
+        " If the file name is too big, we just write its tail part
+        if b:width > b:max_width
+            let b:file_name = fnamemodify(b:file_name, ':t')
+        endif
+
+        if exists('*WebDevIconsGetFileTypeSymbol')
+            let b:file_name = printf('%s %s %%m', WebDevIconsGetFileTypeSymbol(b:file_name), b:file_name)
+        endif
     endif
 
-    if exists('*WebDevIconsGetFileTypeSymbol')
-      let b:file_name = printf('%s %s %%m', WebDevIconsGetFileTypeSymbol(b:file_name), b:file_name)
-    endif
-  endif
-
-  return b:file_name
+    return b:file_name
 endfunction
 
 function! MakeActiveStatusLine()
-  let b:hls = {
-    \ 'n': {
-      \ 'n': 'StatusLineNormalMode',
-      \ 'i': 'StatusLineNormalMode',
-      \ 'nr': 'StatusLineNormalModeWinNr'
-      \ },
-    \ 'i': {
-      \ 'n': 'StatusLineInsertMode',
-      \ 'i': 'StatusLineInsertMode',
-      \ 'nr': 'StatusLineInsertModeWinNr'
-      \ },
-    \ "\<C-v>": {
-      \ 'n': 'StatusLineVisualMode',
-      \ 'i': 'StatusLineVisualMode',
-      \ 'nr': 'StatusLineVisualModeWinNr'
-      \ },
-    \ 'v': {
-      \ 'n': 'StatusLineVisualMode',
-      \ 'i': 'StatusLineVisualMode',
-      \ 'nr': 'StatusLineVisualModeWinNr'
-      \ },
-    \ 'V': {
-      \ 'n': 'StatusLineVisualLineMode',
-      \ 'i': 'StatusLineVisualLineMode',
-      \ 'nr': 'StatusLineVisualLineModeWinNr'
-      \ },
-    \ '': {
-      \ 'n': 'StatusLineVisualBlockMode',
-      \ 'i': 'StatusLineVisualBlockMode',
-      \ 'nr': 'StatusLineVisualBlockModeWinNr'
-      \ },
-    \ 'R': {
-      \ 'n': 'StatusLineReplaceMode',
-      \ 'i': 'StatusLineReplaceMode',
-      \ 'nr': 'StatusLineReplaceModeWinNr'
-      \ },
-    \ 'c': {
-      \ 'n': 'StatusLineCommandMode',
-      \ 'i': 'StatusLineCommandMode',
-      \ 'nr': 'StatusLineCommandModeWinNr'
-      \ },
-    \ 'r?': {
-      \ 'n': 'StatusLineHitEnterPromptMode',
-      \ 'i': 'StatusLineHitEnterPromptMode',
-      \ 'nr': 'StatusLineHitEnterPromptModeWinNr'
-      \ },
-    \ }
-  let b:hl = 'StatusLineBg'
-  let b:hl2 = 'StatusLineBg2c'
+    let b:hls = {
+                \ 'n': {
+                \ 'n': 'StatusLineNormalMode',
+                \ 'i': 'StatusLineNormalMode',
+                \ 'nr': 'StatusLineNormalModeWinNr'
+                \ },
+                \ 'i': {
+                \ 'n': 'StatusLineInsertMode',
+                \ 'i': 'StatusLineInsertMode',
+                \ 'nr': 'StatusLineInsertModeWinNr'
+                \ },
+                \ "\<C-v>": {
+                \ 'n': 'StatusLineVisualMode',
+                \ 'i': 'StatusLineVisualMode',
+                \ 'nr': 'StatusLineVisualModeWinNr'
+                \ },
+                \ 'v': {
+                \ 'n': 'StatusLineVisualMode',
+                \ 'i': 'StatusLineVisualMode',
+                \ 'nr': 'StatusLineVisualModeWinNr'
+                \ },
+                \ 'V': {
+                \ 'n': 'StatusLineVisualLineMode',
+                \ 'i': 'StatusLineVisualLineMode',
+                \ 'nr': 'StatusLineVisualLineModeWinNr'
+                \ },
+                \ '': {
+                \ 'n': 'StatusLineVisualBlockMode',
+                \ 'i': 'StatusLineVisualBlockMode',
+                \ 'nr': 'StatusLineVisualBlockModeWinNr'
+                \ },
+                \ 'R': {
+                \ 'n': 'StatusLineReplaceMode',
+                \ 'i': 'StatusLineReplaceMode',
+                \ 'nr': 'StatusLineReplaceModeWinNr'
+                \ },
+                \ 'c': {
+                \ 'n': 'StatusLineCommandMode',
+                \ 'i': 'StatusLineCommandMode',
+                \ 'nr': 'StatusLineCommandModeWinNr'
+                \ },
+                \ 'r?': {
+                \ 'n': 'StatusLineHitEnterPromptMode',
+                \ 'i': 'StatusLineHitEnterPromptMode',
+                \ 'nr': 'StatusLineHitEnterPromptModeWinNr'
+                \ },
+                \ }
+    let b:hl = 'StatusLineBg'
+    let b:hl2 = 'StatusLineBg2c'
 
-  if has_key(b:hls, mode()) == 1
-    if &modified
-      let b:hl = b:hls[mode()]['i']
-    else
-      let b:hl = b:hls[mode()]['n']
+    if has_key(b:hls, mode()) == 1
+        if &modified
+            let b:hl = b:hls[mode()]['i']
+        else
+            let b:hl = b:hls[mode()]['n']
+        endif
+
+        let b:hl2 = b:hls[mode()]['nr']
     endif
 
-    let b:hl2 = b:hls[mode()]['nr']
-  endif
 
+    let b:status_line = printf('%%#%s# %d %%#%s# %s', b:hl2, win_id2win(g:statusline_winid), b:hl, GetFileName())
+    let b:status_line .= '%#StatusLineLinNbr# %v%#StatusLineBg2b#:%#StatusLineColNbr#%l%< %#StatusLineBg2b#(%p%% %LL)'
+    let b:status_line .= printf('%%=%%#StatusLineBg# %s%s ', ALEStatus(), VcsStatus())
 
-  let b:status_line = printf('%%#%s# %d %%#%s# %s', b:hl2, win_id2win(g:statusline_winid), b:hl, GetFileName())
-  let b:status_line .= '%#StatusLineLinNbr# %v%#StatusLineBg2b#:%#StatusLineColNbr#%l%< %#StatusLineBg2b#(%p%% %LL)'
-  let b:status_line .= printf('%%=%%#StatusLineBg# %s%s ', ALEStatus(), VcsStatus())
-
-  return b:status_line
+    return b:status_line
 endfunction
 
 function! MakeInactiveStatusLine()
-  let b:hl = 'StatusLineBg2c'
-  let b:hlend = 'StatusLineBg'
-  let b:status_line = printf(' %d %%#%s# %s %%#%s#', win_id2win(g:statusline_winid), b:hl, GetFileName(), b:hlend)
-  return b:status_line
+    let b:hl = 'StatusLineBg2c'
+    let b:hlend = 'StatusLineBg'
+    let b:status_line = printf(' %d %%#%s# %s %%#%s#', win_id2win(g:statusline_winid), b:hl, GetFileName(), b:hlend)
+    return b:status_line
 endfunction
 
 augroup mystatusline
