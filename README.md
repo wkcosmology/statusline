@@ -2,6 +2,12 @@ Statusline
 ==========
 This statusline is from [phaazon's repo](https://github.com/phaazon/config/blob/master/nvim-lua/statusline.vim).
 
+
+ScreenShot
+==========
+![Active statusline](media/active.png)
+![Inactive statusline](media/inactive.png)
+
 Requirement
 ===========
 - [tpope/vim-fugitive](https://github.com/tpope/vim-fugitive): for git branch
