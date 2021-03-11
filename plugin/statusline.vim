@@ -109,7 +109,12 @@ function! ALEStatus() abort
   else
     let sl .= '%#StatusLineBg2b#'
   end
-  let sl .= get(g:ale_linters, &filetype, [''])[0] . ' '
+  let l:linter = get(g:ale_linters, &filetype, [])
+  if l:linter ==# []
+    let sl .= ' '
+  else
+    let sl .= l:linter[0] . ' '
+  end
 
   let errors = ale_res['error']
   if errors > 0
