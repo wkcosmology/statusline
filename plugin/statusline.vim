@@ -63,6 +63,19 @@ hi StatusLineCommandModeWinNr guibg=#42474b guifg=#23272e
 hi StatusLineHitEnterPromptMode guibg=#ff6c6b guifg=#23272e
 hi StatusLineHitEnterPromptModeItalic guibg=#ff6c6b guifg=#23272e gui=italic
 hi StatusLineHitEnterPromptModeWinNr guibg=#b64a49 guifg=#23272e
+
+if !exists('g:statusline_ignore')
+  let g:statusline_ignore = {
+        \ 'help': '[Help]',
+        \ 'starify': '[Startify]',
+        \ 'coc-explorer': '[Coc-Explorer]'}
+end
+
+function! s:win_id2alpha(id)
+  let alpha = split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\zs')
+  return get(alpha, a:id - 1, '?')
+endf
+
 function! VcsStatus()
   let branch = fugitive#head()
   let b:branch_maxwin = 20
@@ -217,10 +230,27 @@ function! MakeActiveStatusLine()
     let b:hl2 = b:hls[mode()]['nr']
   endif
 
-
-  let b:status_line = printf('%%#%s# %d %%#%s# %s', b:hl2, win_id2win(g:statusline_winid), b:hl, GetFileName())
-  let b:status_line .= '%#StatusLineLinNbr# %v%#StatusLineBg2b#:%#StatusLineColNbr#%l%< %#StatusLineBg2b#(%p%% %LL)'
-  let b:status_line .= printf('%%=%%#StatusLineBg# %s%s ', ALEStatus(), VcsStatus())
+  if get(g:statusline_ignore, &filetype, '') !=# ''
+    let b:status_line = printf(
+          \ '%%#%s# %s %%#%s# %s',
+          \ b:hl2,
+          \ s:win_id2alpha(win_id2win(g:statusline_winid)),
+          \ b:hl,
+          \ g:statusline_ignore[&filetype])
+  else
+    let b:status_line = printf(
+          \ '%%#%s# %s %%#%s# %s',
+          \ b:hl2,
+          \ s:win_id2alpha(win_id2win(g:statusline_winid)),
+          \ b:hl,
+          \ GetFileName())
+    let b:status_line .=
+          \ '%#StatusLineLinNbr# %v%#StatusLineBg2b#:%#StatusLineColNbr#%l%< %#StatusLineBg2b#(%p%% %LL)'
+    let b:status_line .= printf(
+          \ '%%=%%#StatusLineBg# %s%s ',
+          \ ALEStatus(),
+          \ VcsStatus())
+  end
 
   return b:status_line
 endfunction
@@ -228,7 +258,22 @@ endfunction
 function! MakeInactiveStatusLine()
   let b:hl = 'StatusLineBg2c'
   let b:hlend = 'StatusLineBg'
-  let b:status_line = printf(' %d %%#%s# %s %%#%s#', win_id2win(g:statusline_winid), b:hl, GetFileName(), b:hlend)
+  let ft = getbufvar(winbufnr(g:statusline_winid), '&filetype')
+  if get(g:statusline_ignore, ft, '') !=# ''
+    let b:status_line = printf(
+          \ ' %s %%#%s# %s %%#%s#',
+          \ s:win_id2alpha(win_id2win(g:statusline_winid)),
+          \ b:hl,
+          \ g:statusline_ignore[ft],
+          \ b:hlend)
+  else
+    let b:status_line = printf(
+          \ ' %s %%#%s# %s %%#%s#',
+          \ s:win_id2alpha(win_id2win(g:statusline_winid)),
+          \ b:hl,
+          \ GetFileName(),
+          \ b:hlend)
+  end
   return b:status_line
 endfunction
 
