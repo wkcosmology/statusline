@@ -67,7 +67,7 @@ hi StatusLineHitEnterPromptModeWinNr guibg=#b64a49 guifg=#23272e
 if !exists('g:statusline_ignore')
   let g:statusline_ignore = {
         \ 'help': '[Help]',
-        \ 'starify': '[Startify]',
+        \ 'startify': '[Startify]',
         \ 'coc-explorer': '[Coc-Explorer]'}
 end
 
@@ -154,7 +154,7 @@ function! GetFileName()
   let b:width = strwidth(b:file_name)
 
   if b:width == 0
-    let b:file_name = '[scratch]'
+    let b:file_name = '[Scratch] '
   else
     " If the file name is too big, we just write its tail part
     if b:width > b:max_width
@@ -239,7 +239,7 @@ function! MakeActiveStatusLine()
           \ g:statusline_ignore[&filetype])
   else
     let b:status_line = printf(
-          \ '%%#%s# %s %%#%s# %s',
+          \ '%%#%s# %s %%#%s# %s ',
           \ b:hl2,
           \ s:win_id2alpha(win_id2win(g:statusline_winid)),
           \ b:hl,
