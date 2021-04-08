@@ -84,10 +84,7 @@ function! VcsStatus()
     return ''
   endif
 
-  let hunk_stat = get(b:,'gitsigns_status_dict', {})
-  let a = get(hunk_stat, 'added', 0)
-  let m = get(hunk_stat, 'changed', 0)
-  let r = get(hunk_stat, 'removed', 0)
+  let [a,m,r] = GitGutterGetHunkSummary()
   let ahl = ''
   let mhl = ''
   let rhl = ''
