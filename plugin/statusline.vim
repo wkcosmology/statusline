@@ -77,6 +77,10 @@ function! s:win_id2alpha(id)
 endf
 
 function! VcsStatus()
+  if (!exists('b:gitsigns_status_dict'))
+    return ''
+  endif
+
   let branch = fugitive#head()
   let b:branch_maxwin = 20
 
@@ -84,7 +88,10 @@ function! VcsStatus()
     return ''
   endif
 
-  let [a,m,r] = GitGutterGetHunkSummary()
+  let a = b:gitsigns_status_dict['added']
+  let m = b:gitsigns_status_dict['changed']
+  let r = b:gitsigns_status_dict['removed']
+
   let ahl = ''
   let mhl = ''
   let rhl = ''
@@ -169,51 +176,51 @@ endfunction
 function! MakeActiveStatusLine()
   let b:hls = {
         \ 'n': {
-        \ 'n': 'StatusLineNormalMode',
-        \ 'i': 'StatusLineNormalMode',
-        \ 'nr': 'StatusLineNormalModeWinNr'
-        \ },
-        \ 'i': {
-        \ 'n': 'StatusLineInsertMode',
-        \ 'i': 'StatusLineInsertMode',
-        \ 'nr': 'StatusLineInsertModeWinNr'
-        \ },
-        \ "\<C-v>": {
-        \ 'n': 'StatusLineVisualMode',
-        \ 'i': 'StatusLineVisualMode',
-        \ 'nr': 'StatusLineVisualModeWinNr'
-        \ },
-        \ 'v': {
-        \ 'n': 'StatusLineVisualMode',
-        \ 'i': 'StatusLineVisualMode',
-        \ 'nr': 'StatusLineVisualModeWinNr'
-        \ },
-        \ 'V': {
-        \ 'n': 'StatusLineVisualLineMode',
-        \ 'i': 'StatusLineVisualLineMode',
-        \ 'nr': 'StatusLineVisualLineModeWinNr'
-        \ },
-        \ '': {
-        \ 'n': 'StatusLineVisualBlockMode',
-        \ 'i': 'StatusLineVisualBlockMode',
-        \ 'nr': 'StatusLineVisualBlockModeWinNr'
-        \ },
-        \ 'R': {
-        \ 'n': 'StatusLineReplaceMode',
-        \ 'i': 'StatusLineReplaceMode',
-        \ 'nr': 'StatusLineReplaceModeWinNr'
-        \ },
-        \ 'c': {
-        \ 'n': 'StatusLineCommandMode',
-        \ 'i': 'StatusLineCommandMode',
-        \ 'nr': 'StatusLineCommandModeWinNr'
-        \ },
-        \ 'r?': {
-        \ 'n': 'StatusLineHitEnterPromptMode',
-        \ 'i': 'StatusLineHitEnterPromptMode',
-        \ 'nr': 'StatusLineHitEnterPromptModeWinNr'
-        \ },
-        \ }
+          \ 'n': 'StatusLineNormalMode',
+          \ 'i': 'StatusLineNormalMode',
+          \ 'nr': 'StatusLineNormalModeWinNr'
+          \ },
+          \ 'i': {
+            \ 'n': 'StatusLineInsertMode',
+            \ 'i': 'StatusLineInsertMode',
+            \ 'nr': 'StatusLineInsertModeWinNr'
+            \ },
+            \ "\<C-v>": {
+              \ 'n': 'StatusLineVisualMode',
+              \ 'i': 'StatusLineVisualMode',
+              \ 'nr': 'StatusLineVisualModeWinNr'
+              \ },
+              \ 'v': {
+                \ 'n': 'StatusLineVisualMode',
+                \ 'i': 'StatusLineVisualMode',
+                \ 'nr': 'StatusLineVisualModeWinNr'
+                \ },
+                \ 'V': {
+                  \ 'n': 'StatusLineVisualLineMode',
+                  \ 'i': 'StatusLineVisualLineMode',
+                  \ 'nr': 'StatusLineVisualLineModeWinNr'
+                  \ },
+                  \ '': {
+                    \ 'n': 'StatusLineVisualBlockMode',
+                    \ 'i': 'StatusLineVisualBlockMode',
+                    \ 'nr': 'StatusLineVisualBlockModeWinNr'
+                    \ },
+                    \ 'R': {
+                      \ 'n': 'StatusLineReplaceMode',
+                      \ 'i': 'StatusLineReplaceMode',
+                      \ 'nr': 'StatusLineReplaceModeWinNr'
+                      \ },
+                      \ 'c': {
+                        \ 'n': 'StatusLineCommandMode',
+                        \ 'i': 'StatusLineCommandMode',
+                        \ 'nr': 'StatusLineCommandModeWinNr'
+                        \ },
+                        \ 'r?': {
+                          \ 'n': 'StatusLineHitEnterPromptMode',
+                          \ 'i': 'StatusLineHitEnterPromptMode',
+                          \ 'nr': 'StatusLineHitEnterPromptModeWinNr'
+                          \ },
+                          \ }
   let b:hl = 'StatusLineBg'
   let b:hl2 = 'StatusLineBg2c'
 
