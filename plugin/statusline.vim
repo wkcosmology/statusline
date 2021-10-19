@@ -88,9 +88,9 @@ function! VcsStatus()
     return ''
   endif
 
-  let a = b:gitsigns_status_dict['added']
-  let m = b:gitsigns_status_dict['changed']
-  let r = b:gitsigns_status_dict['removed']
+  let a = has_key(b:gitsigns_status_dict, 'added') ? b:gitsigns_status_dict['added']: 0
+  let m = has_key(b:gitsigns_status_dict, 'changed') ? b:gitsigns_status_dict['changed']: 0
+  let r = has_key(b:gitsigns_status_dict, 'removed') ? b:gitsigns_status_dict['removed']: 0
 
   let ahl = ''
   let mhl = ''
