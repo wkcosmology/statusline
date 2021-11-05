@@ -15,11 +15,11 @@ hi StatusLineGitDiffAdd guibg=#23272e guifg=LightGreen
 hi StatusLineGitDiffMod guibg=#23272e guifg=LightBlue
 hi StatusLineGitDiffDel guibg=#23272e guifg=LightRed
 
-hi StatusLineALEMsg guibg=#23272e guifg=#da8548
-hi StatusLineALEErrors guibg=#23272e guifg=#ff6c6b
-hi StatusLineALEWarnings guibg=#23272e guifg=#ECBE7B
-hi StatusLineALEInformations guibg=#23272e guifg=#51afef
-hi StatusLineALEHints guibg=#23272e guifg=#c678dd
+hi StatusLineDiagMsg guibg=#23272e guifg=#da8548
+hi StatusLineDiagErrors guibg=#23272e guifg=#ff6c6b
+hi StatusLineDiagWarnings guibg=#23272e guifg=#ECBE7B
+hi StatusLineDiagInformations guibg=#23272e guifg=#51afef
+hi StatusLineDiagHints guibg=#23272e guifg=#c678dd
 
 hi StatusLineCurrentSymbolName guibg=#23272e guifg=#c678dd
 hi StatusLineCurrentSymbolType guibg=#23272e guifg=#98be65 gui=italic
@@ -116,34 +116,27 @@ function! VcsStatus()
   return printf(' %%#StatusLineGitBranchSymbol# %%#StatusLineGitBranchName#%s %s %d  %s %d  %s %d ', trim(branch), ahl, a, mhl, m, rhl, r)
 endfunction
 
-function! ALEStatus() abort
+function! DiagStatus() abort
   let sl = ''
-  let ale_res = ale#statusline#Count(winbufnr(g:statusline_winid))
+  let errors = luaeval("vim.lsp.diagnostic.get_count(0, [[Error]])")
+  let warnings = luaeval("vim.lsp.diagnostic.get_count(0, [[Warning]])")
 
-  let total = ale_res['total']
+  let total = errors + warnings
   if total > 0
-    let sl .= '%#StatusLineALEMsg#'
+    let sl .= '%#StatusLineDiagMsg#'
   else
     let sl .= '%#StatusLineBg2b#'
   end
-  let l:linter = get(g:ale_linters, &filetype, [])
-  if l:linter ==# []
-    let sl .= ' '
-  else
-    let sl .= l:linter[0] . ' '
-  end
 
-  let errors = ale_res['error']
   if errors > 0
-    let sl .= '%#StatusLineALEErrors#'
+    let sl .= '%#StatusLineDiagErrors#'
   else
     let sl .= '%#StatusLineBg2b#'
   end
   let sl .= printf('  %d', errors)
 
-  let warnings = ale_res['warning']
   if warnings > 0
-    let sl .= '%#StatusLineALEWarnings#'
+    let sl .= '%#StatusLineDiagWarnings#'
   else
     let sl .= '%#StatusLineBg2b#'
   end
@@ -252,7 +245,7 @@ function! MakeActiveStatusLine()
           \ '%#StatusLineLinNbr# %v%#StatusLineBg2b#:%#StatusLineColNbr#%l%< %#StatusLineBg2b#(%p%% %LL)'
     let b:status_line .= printf(
           \ '%%=%%#StatusLineBg# %s%s ',
-          \ ALEStatus(),
+          \ DiagStatus(),
           \ VcsStatus())
   end
 
