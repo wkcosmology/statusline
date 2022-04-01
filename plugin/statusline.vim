@@ -118,8 +118,8 @@ endfunction
 
 function! DiagStatus() abort
   let sl = ''
-  let errors = luaeval("vim.lsp.diagnostic.get_count(0, [[Error]])")
-  let warnings = luaeval("vim.lsp.diagnostic.get_count(0, [[Warning]])")
+  let errors = luaeval("table.getn(vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR }))")
+  let warnings = luaeval("table.getn(vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN }))")
 
   let total = errors + warnings
   if total > 0
@@ -279,4 +279,3 @@ augroup mystatusline
   autocmd WinEnter,BufEnter * setlocal statusline=%!MakeActiveStatusLine()
   autocmd WinLeave,BufLeave * setlocal statusline=%!MakeInactiveStatusLine()
 augroup END
-
