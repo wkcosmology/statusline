@@ -81,7 +81,7 @@ function! VcsStatus()
     return ''
   endif
 
-  let branch = fugitive#head()
+  let branch = FugitiveHead()
   let b:branch_maxwin = 20
 
   if branch ==# ''
