@@ -72,7 +72,7 @@ if !exists('g:statusline_ignore')
 end
 
 function! s:win_id2alpha(id)
-  let alpha = split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\zs')
+  let alpha = split('123456789', '\zs')
   return get(alpha, a:id - 1, '?')
 endf
 
@@ -113,7 +113,7 @@ function! VcsStatus()
     let rhl .= '%#StatusLineBg2b#'
   end
 
-  return printf(' %%#StatusLineGitBranchSymbol# %%#StatusLineGitBranchName#%s %s %d  %s %d  %s %d ', trim(branch), ahl, a, mhl, m, rhl, r)
+  return printf(' %%#StatusLineGitBranchSymbol#  %%#StatusLineGitBranchName#%s %s  %d  %s  %d  %s  %d ', trim(branch), ahl, a, mhl, m, rhl, r)
 endfunction
 
 function! DiagStatus() abort
@@ -159,7 +159,7 @@ function! GetFileName()
     endif
 
     if exists('*WebDevIconsGetFileTypeSymbol')
-      let b:file_name = printf('%s %s %%m', WebDevIconsGetFileTypeSymbol(b:file_name), b:file_name)
+      let b:file_name = printf('%s  %s %%m', WebDevIconsGetFileTypeSymbol(b:file_name), b:file_name)
     endif
   endif
 
